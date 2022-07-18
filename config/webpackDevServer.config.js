@@ -114,6 +114,13 @@ module.exports = function (proxy, allowedHost) {
         // This registers user provided middleware for proxy reasons
         require(paths.proxySetup)(app);
       }
+
+      const chokidar = require('chokidar');
+      chokidar.watch(process.env.KEYB_CONFIG_FILE).on('all', function (event, path) {
+        var contents = fs.readFileSync(process.env.KEYB_CONFIG_FILE, 'utf8');
+
+        server.sockWrite(server.sockets, 'keyb-config-changed', contents);
+      });
     },
     after(app) {
       // Redirect to `PUBLIC_URL` or `homepage` from `package.json` if url not match
