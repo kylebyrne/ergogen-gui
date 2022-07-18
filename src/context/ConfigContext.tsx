@@ -4,6 +4,20 @@ import yaml from "js-yaml";
 import debounce from "lodash.debounce";
 import { useLocalStorage } from 'react-use';
 
+import * as url from 'url';
+
+const connection = new WebSocket(
+  url.format({
+    protocol: window.location.protocol === 'https:' ? 'wss' : 'ws',
+    hostname: window.location.hostname,
+    port: window.location.port,
+    // Hardcoded in WebpackDevServer
+    pathname: '/sockjs-node',
+    slashes: true,
+  })
+);
+
+
 type Props = {
     initialInput: string,
     children: React.ReactNode[] | React.ReactNode,
@@ -113,6 +127,14 @@ const ConfigContextProvider = ({initialInput, children}: Props) => {
         }
     }, [configInput, processInput]);
 
+    useEffect(()=>{
+        connection.addEventListener('message', (event) => {
+          const parsed = JSON.parse(event.data);
+          if(parsed.type === "keyb-config-changed") {
+            setConfigInput(parsed.data);
+          }
+        })
+    }, []);
 
     return (
         <ConfigContext.Provider
