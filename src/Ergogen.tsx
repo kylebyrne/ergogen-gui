@@ -25,6 +25,7 @@ const EditorContainer = styled.div`
 const FlexContainer = styled.div`
   display: flex;
   flex-flow: wrap;
+  flex-grow: 1;
 `;
 
 const Error = styled.div`
@@ -108,50 +109,21 @@ const Ergogen = () => {
 
     let previewContent = typeof walkArray === 'string' ? walkArray : "";
 
+
     return (
         <FlexContainer>
             <StyledSplit
                 direction={"horizontal"}
-                sizes={[30, 70]}
+                sizes={[70, 30]}
                 minSize={100}
                 gutterSize={10}
                 snapOffset={0}
             >
                 <LeftSplitPane>
-                    <EditorContainer>
-                        <StyledSelect
-                            options={exampleOptions}
-                            value={selectedOption}
-                            // @ts-ignore
-                            onChange={(newValue: ConfigOption|null) => setSelectedOption(newValue)}
-                            placeholder={"Paste your config below, or select an example here!"}
-                        />
-                        <StyledConfigEditor/>
-                        <Button onClick={() => configContext?.processInput(configContext?.configInput, {pointsonly: false})}>Generate</Button>
-                        <OptionContainer>
-                            <GenOption optionId={'autogen'} label={'Auto-generate'} setSelected={configContext?.setAutoGen} checked={configContext?.autoGen}/>
-                            <GenOption optionId={'debug'} label={'Debug'} setSelected={configContext?.setDebug} checked={configContext?.debug}/>
-                            <GenOption optionId={'autogen3d'} label={<>Auto-gen 3D <small>(slow)</small></>} setSelected={configContext?.setAutoGen3D} checked={configContext?.autoGen3D}/>
-                        </OptionContainer>
-                        {configContext?.error && <Error>{configContext?.error?.toString()}</Error>}
-                    </EditorContainer>
+                    <StyledFilePreview key={previewKey} previewKey={previewKey} previewContent={previewContent}/>
                 </LeftSplitPane>
-
                 <RightSplitPane>
-                    <StyledSplit
-                        direction={"horizontal"}
-                        sizes={[70, 30]}
-                        minSize={100}
-                        gutterSize={10}
-                        snapOffset={0}
-                    >
-                        <LeftSplitPane>
-                            <StyledFilePreview key={previewKey} previewKey={previewKey} previewContent={previewContent}/>
-                        </LeftSplitPane>
-                        <RightSplitPane>
-                            <Downloads setPreview={setPreviewKey}/>
-                        </RightSplitPane>
-                    </StyledSplit>
+                    <Downloads setPreview={setPreviewKey}/>
                 </RightSplitPane>
             </StyledSplit>
         </FlexContainer>
